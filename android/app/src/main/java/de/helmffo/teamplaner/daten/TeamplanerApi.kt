@@ -7,6 +7,8 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
+import kotlinx.serialization.json.JsonObject
 
 /** REST-Schnittstelle des Teamplaner-Servers (siehe server/teamplaner_server/routen). */
 interface TeamplanerApi {
@@ -51,4 +53,49 @@ interface TeamplanerApi {
 
     @DELETE("teams/{team}/einladungen/{einladung}")
     suspend fun einladungLoeschen(@Path("team") teamId: Int, @Path("einladung") einladungId: Int)
+
+    // --- Termine ---
+
+    @GET("teams/{team}/termine")
+    suspend fun termine(@Path("team") teamId: Int, @Query("vergangene") vergangene: Boolean = false): List<Termin>
+
+    @POST("teams/{team}/termine")
+    suspend fun terminAnlegen(@Path("team") teamId: Int, @Body daten: TerminNeu): List<Termin>
+
+    @GET("teams/{team}/termine/{termin}")
+    suspend fun termin(@Path("team") teamId: Int, @Path("termin") terminId: Int): Termin
+
+    /** [aenderungen] enthält nur geänderte Felder; `null` löscht einen Wert. */
+    @PATCH("teams/{team}/termine/{termin}")
+    suspend fun terminAendern(
+        @Path("team") teamId: Int,
+        @Path("termin") terminId: Int,
+        @Body aenderungen: JsonObject,
+        @Query("bereich") bereich: Bereich = Bereich.EINZELN,
+    ): Termin
+
+    @DELETE("teams/{team}/termine/{termin}")
+    suspend fun terminLoeschen(
+        @Path("team") teamId: Int,
+        @Path("termin") terminId: Int,
+        @Query("bereich") bereich: Bereich = Bereich.EINZELN,
+    )
+
+    @PUT("teams/{team}/termine/{termin}/antwort")
+    suspend fun antworten(@Path("team") teamId: Int, @Path("termin") terminId: Int, @Body daten: AntwortSetzen): Termin
+
+    @GET("teams/{team}/standardantworten")
+    suspend fun standardantworten(@Path("team") teamId: Int): Standardantworten
+
+    @PUT("teams/{team}/standardantworten")
+    suspend fun standardantwortenSetzen(@Path("team") teamId: Int, @Body daten: Standardantworten): Standardantworten
+
+    @GET("teams/{team}/statistik")
+    suspend fun statistik(@Path("team") teamId: Int, @Query("art") art: String = "training"): Statistik
+}
+
+/** Bei Serien: nur dieser Termin oder dieser und alle folgenden. */
+enum class Bereich { EINZELN, FOLGENDE;
+
+    override fun toString() = name.lowercase()
 }

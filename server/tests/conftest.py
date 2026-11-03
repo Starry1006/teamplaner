@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 
 import pytest
@@ -19,12 +20,22 @@ PASSWORT = "geheim1234"
 
 @pytest.fixture
 def engine():
+    """SQLite im Speicher – oder PostgreSQL, wenn TEAMPLANER_TEST_DB gesetzt ist
+    (z. B. postgresql+psycopg://tp:tp@localhost/tp_test; die Datenbank wird geleert!)."""
+    url = os.environ.get("TEAMPLANER_TEST_DB")
+    if url:
+        engine = create_engine(url)
+        Basis.metadata.drop_all(engine)
+        Basis.metadata.create_all(engine)
+        yield engine
+        engine.dispose()
+        return
     engine = create_engine(
         "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
     )
     event.listen(engine, "connect", lambda v, _: v.execute("PRAGMA foreign_keys=ON"))
     Basis.metadata.create_all(engine)
-    return engine
+    yield engine
 
 
 @pytest.fixture

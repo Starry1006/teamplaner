@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from . import __version__
 from .datenbank import engine_erstellen
 from .einstellungen import Einstellungen, laden
-from .routen import anmeldung, ich, teams
+from .routen import anmeldung, ich, teams, termine
 
 
 def erstelle_app(einstellungen: Einstellungen | None = None, engine: Engine | None = None) -> FastAPI:
@@ -27,4 +27,5 @@ def erstelle_app(einstellungen: Einstellungen | None = None, engine: Engine | No
     app.include_router(anmeldung.router)
     app.include_router(ich.router)
     app.include_router(teams.router)
+    app.include_router(termine.router)
     return app

@@ -13,6 +13,14 @@ Mannschaftskasse und Umfragen. Die Daten liegen auf dem eigenen Server.
 Anmeldung, Registrierung nur mit Einladungscode, Teamliste, Rollen (Admin, Trainer,
 Spieler), Einladungen erstellen/teilen/löschen, mehrere Teams, Profil und Passwort.
 
+**AP 2 – Termine** ✔
+Training, Spiel (Gegner, Heim/Auswärts) und Event; wöchentliche Serien (z. B. Di + Do
+bis Saisonende); Treffpunkt, Ort, Notiz, Antwortfrist; Zu-/Absage/Vielleicht mit Grund
+(nur für Trainer sichtbar); Trainer tragen Antworten für Spieler ein; Termine absagen,
+ändern oder löschen – einzeln oder „ab hier“ für die ganze Serie; Standardantwort pro
+Terminart; „Offene Antworten teilen“ (z. B. in die WhatsApp-Gruppe);
+Trainings-/Spielbeteiligung seit Saisonbeginn (1. Juli).
+
 ## Server betreiben
 
 Auf einem Server mit Docker und einer Domain, die auf ihn zeigt:
@@ -35,6 +43,8 @@ cd server
 python3.12 -m venv .venv && . .venv/bin/activate
 pip install -e ".[dev]"
 pytest -q
+# optional zusätzlich gegen PostgreSQL (Datenbank wird geleert!):
+TEAMPLANER_TEST_DB=postgresql+psycopg://user:pw@localhost/tp_test pytest -q
 TEAMPLANER_DB=sqlite:///./dev.db teamplaner-server starten   # http://localhost:8000/docs
 ```
 
@@ -59,3 +69,6 @@ alembic -c alembic.ini revision --autogenerate -m "Beschreibung"
 ```
 
 Der Server spielt Migrationen beim Start automatisch ein.
+
+Terminserien werden in der Zeitzone `TEAMPLANER_ZEITZONE` (Standard `Europe/Berlin`)
+berechnet – 19:00 Uhr bleibt auch nach der Zeitumstellung 19:00 Uhr.

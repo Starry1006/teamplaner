@@ -32,9 +32,10 @@ Ein Team hat immer mindestens einen Admin. Jedes Mitglied kann selbst austreten.
 ## Arbeitspakete
 
 1. **Grundgerüst** ✔ – Datenmodell, Login, Einladungscodes, Teamliste, Rollen, Profil.
-2. **Termine** – Training/Spiel/Event, Serien (z. B. jeden Di + Do), Ort, Treffpunkt;
+2. **Termine** ✔ – Training/Spiel/Event, Serien (z. B. jeden Di + Do), Ort, Treffpunkt;
    Zu-/Absage mit Grund, Standardantwort pro Termintyp, Antwortfrist, Übersicht
-   für Trainer (wer fehlt noch?), Terminliste offline verfügbar.
+   für Trainer (wer fehlt noch?), Beteiligung seit Saisonbeginn.
+   *Noch offen:* Terminliste offline verfügbar (später mit Room-Zwischenspeicher).
 3. **Kasse** – Beiträge, Strafenkatalog, Buchungen pro Mitglied, offene Beträge,
    Kassenstand, Export als CSV.
 4. **Umfragen** – Einfach-/Mehrfachauswahl, anonym oder namentlich, Frist, Ergebnis.
@@ -42,8 +43,24 @@ Ein Team hat immer mindestens einen Admin. Jedes Mitglied kann selbst austreten.
    Inhalte bleiben auf dem Server), Erinnerungen, Kalender-Export (iCal),
    signierte Release-APK.
 
+## Termine – Regeln
+
+- Spieler antworten bis zur Frist (ohne Frist: bis Beginn); danach und bei abgesagten
+  Terminen nur noch Trainer/Admins.
+- Absagegründe sehen nur Trainer, Admins und die Person selbst.
+- „Ab hier ändern“ überträgt eine neue Uhrzeit als Verschiebung auf alle folgenden
+  Termine der Serie; andere Felder werden nur gesetzt, wenn sie geändert wurden.
+- Beteiligung zählt vergangene, nicht abgesagte Termine – pro Mitglied erst ab Beitritt.
+
+## Ideen für Fußball (später)
+
+- **Kader/Nominierung** für Spiele: Trainer wählt aus den Zusagen den Spieltagskader
+  (z. B. 16 von 25) und teilt ihn.
+- Positionen (Tor, Abwehr, Mittelfeld, Sturm) in der Teamliste.
+- Fahrgemeinschaften zu Auswärtsspielen.
+
 ## Offene Fragen
 
-- Sportart und Teamgröße (beeinflusst z. B. Aufstellung, Positionen)
+- Sportart: Fußball, ca. 25 Spieler ✔
 - Welcher Server (VPS, NAS, Homeserver)?
 - Push über Firebase Cloud Messaging in Ordnung?

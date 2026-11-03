@@ -108,6 +108,14 @@ class Teamplaner(private val speicher: Sitzungsspeicher, private val scope: Coro
 
     suspend fun teamWaehlen(teamId: Int) = speicher.teamWaehlen(teamId)
 
+    /** Zuletzt gewähltes Team, sonst das erste (und merkt es sich). */
+    suspend fun aktivesTeam(ich: Ich): TeamKurz? {
+        val wunsch = speicher.aktivesTeam.first()
+        val team = ich.teams.firstOrNull { it.id == wunsch } ?: ich.teams.firstOrNull()
+        if (team != null && team.id != wunsch) speicher.teamWaehlen(team.id)
+        return team
+    }
+
     private fun geraet(): String = "${Build.MANUFACTURER} ${Build.MODEL}".take(100)
 }
 

@@ -7,6 +7,15 @@ on:
 jobs:
   server:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: tp
+          POSTGRES_PASSWORD: tp
+          POSTGRES_DB: tp_test
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
     defaults:
       run:
         working-directory: server
@@ -16,7 +25,16 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e ".[dev]"
-      - run: pytest -q
+      - name: Tests mit SQLite
+        run: pytest -q
+      - name: Migrationen auf leerem PostgreSQL
+        run: teamplaner-server migrieren
+        env:
+          TEAMPLANER_DB: postgresql+psycopg://tp:tp@localhost/tp_test
+      - name: Tests mit PostgreSQL
+        run: pytest -q
+        env:
+          TEAMPLANER_TEST_DB: postgresql+psycopg://tp:tp@localhost/tp_test
 
   android:
     runs-on: ubuntu-latest
