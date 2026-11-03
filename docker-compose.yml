@@ -1,0 +1,44 @@
+# Teamplaner auf dem eigenen Server: PostgreSQL + API + Caddy (HTTPS automatisch).
+# Einstellungen in .env (Vorlage: .env.beispiel).
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: teamplaner
+      POSTGRES_PASSWORD: ${DB_PASSWORT:?DB_PASSWORT in .env setzen}
+      POSTGRES_DB: teamplaner
+    volumes:
+      - db-daten:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teamplaner"]
+      interval: 5s
+      retries: 10
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      TEAMPLANER_DB: postgresql+psycopg://teamplaner:${DB_PASSWORT}@db/teamplaner
+    depends_on:
+      db:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      TEAMPLANER_DOMAIN: ${TEAMPLANER_DOMAIN:?TEAMPLANER_DOMAIN in .env setzen}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-daten:/data
+    depends_on:
+      - server
+
+volumes:
+  db-daten:
+  caddy-daten:
